@@ -1,0 +1,156 @@
+Configuring Jenkins
+===================
+
+Suggested project chaings:
+
+**1- Backend**: This is the starting point of the build chain.
+This project will checkout the code from git repository
+[source,bash]
+----
+git@bitbucket.org:masgari/pushlists.git
+#configure bitbucket development keys
+----
+
+and run gradle script to build the java code. If all tests passed,
+next project will run.
+[source,bash]
+----
+#configure gradle for the first time
+#this is required for build.gradle
+if [ ! -f ~/.gradle/gradle.properties ]; then
+mkdir -p ~/.gradle/
+echo "Configuring gradle properties"
+echo "artifactory_user=admin" >> ~/.gradle/gradle.properties
+echo "artifactory_password=admin" >> ~/.gradle/gradle.properties
+echo "artifactory_contextUrl=http://localhost:8081/artifactory" >> ~/.gradle/gradle.properties
+
+fi
+
+
+cd backend
+# clean the project, otherwise jenkins will not display trends
+./gradlew clean test
+----
+
+**2- Backend-Integration**: Just run integration tests (currently).
+Laster a code-quality project will be added to report code coverage and
+check quality rules using `Sonar`.
+
+
+[source,bash]
+----
+./gradlew intTest
+----
+
+**3- Frontend**: Build frontend
+[source,bash]
+----
+cd frontend
+npm install
+bower install
+gulp clean
+gulp test
+----
+
+
+**4- Frontend-Integration**: Run protractor tests
+(todo: check to see how can we run protractor in headless build server)
+[source,bash]
+----
+gulp protractor
+----
+
+(todo: how to publish test results to jenkins, check required plugins)
+
+**4- Chrom Extension**:
+[source,bash]
+----
+cd extension/pList
+npm install
+bower install
+
+#fix test problem, see http://bit.ly/1AgSpzX
+cd test
+bower install
+cd ..
+grunt clean
+grunt test
+----
+
+**5- Extension-Integration**
+[source,bash]
+----
+grunt ?
+----
+
+**6- Cli**
+[source,bash]
+----
+cd cli
+export GOPATH=`pwd`
+go build -o bin/pl pl
+#todo: write unit tests
+----
+
+**7- Cli-Integration**
+[source,bash]
+----
+#need to run backend server in test mode (which runs Elasticsearch internally)
+
+#todo: find a better way to run all tests
+go test dsl/cmd
+go test dsl/suggestion
+go test dsl/article
+----
+
+**8- Deployment**: Build the system after all tests passed.
+(todo: how to specify version and build number for all projects  and reuse it here?)
+
+It might be better to use Elastic BeansTalk to automate deployment on AWS
+see https://wiki.jenkins-ci.org/display/JENKINS/AWSEB+Deployment+Plugin
+
+[source,bash]
+----
+echo ${BUILD_NUMBER}
+BASE=`pwd`
+BUILD_DIR="${BASE}/../build/${BUILD_NUMBER}"
+mkdir -p ${BUILD_DIR}
+rm -fr ${BUILD_DIR}/*
+
+cd ${BASE}/backend/web-server
+../gradlew installApp
+mv build/install/web-server ${BUILD_DIR}
+
+cd ${BASE}/frontend
+npm install
+bower install
+gulp build
+mkdir -p ${BUILD_DIR}/web-server/app
+mv dist/* ${BUILD_DIR}/web-server/app/
+
+cd ${BASE}/extension/pList
+npm install
+bower install
+grunt build
+EXT_VER=$(cat app/manifest.json | grep \"version\": | cut -c 17-21)
+cp package/pList-${EXT_VER}.zip ${BUILD_DIR}/web-server/app/assets/
+#Gruntfile.js increase version in app/manifest.json after each build
+# rollback it for test purposes
+#git checkout -- app/manifest.json
+
+cd ${BASE}/cli
+#cli is already built during test
+cp bin/pl ${BUILD_DIR}/web-server/app/assets/
+
+printf "Build Number:${BUILD_NUMBER}\nDate:`date`\n" > ${BUILD_DIR}/build.txt
+
+#now compress and upload the artifacts
+cd ${BUILD_DIR}
+tar cjf ../pl-${BUILD_NUMBER}.tar.bz2 *
+
+#todo: find a jenkins plugin to upload the bz2 file to s3 bucket
+
+#todo: trigger re-deploy on aws instance
+
+cd ${BASE}
+----

@@ -1,0 +1,25 @@
+
+See https://github.com/pmoust/squid-deb-proxy
+
+
+*Building*
+[source,bash]
+----
+docker build -t devops-squid-deb-proxy .
+----
+
+*Running*
+[source,bash]
+----
+docker run -d --name proxy -v /path/to/cachedir:/cachedir -p 6000:8000 devops-squid-deb-proxy
+----
+
+*In other Dockerfiles*
+[source,bash]
+----
+ENV DOCKER_HOST 192.168.0.65
+ENV PROXY_PORT 6000
+
+RUN apt-get update && apt-get install squid-deb-proxy-client \
+echo 'Acquire::http::Proxy "http://${DOCKER_HOST}:{PROXY_PORT}";' > /etc/apt/apt.conf.d/30autoproxy
+----

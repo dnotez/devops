@@ -1,0 +1,13 @@
+Project layout
+==============
+
+
+1. Backend: Main backend project contains multiple modules. This is gradle-based project.
+2. Frontend: A gulp based project with coffeescript support for AngularJS based frontend.
+3. Extension: Gulp based chrome extension
+4. CLI: Go-lang based command line interface.
+5. Deployment: Contains docker configurations and scripts to build and deploy the system.
+6. DevOps: Docker files and scripts for building development environment (Jenkins, builder images, etc.)
+
+All these projects will be placed in code folder, currently all of them under one bitbucket project.
+

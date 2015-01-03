@@ -1,0 +1,29 @@
+dNotz Project
+=============
+
+== What is it?
+
+An online note repository for devlopers, similar to evernotes.com, but for developers.
+
+= Building blocks
+
+* **Chrome extension**: A chrome extension for saving notes quickly from web. For most important websites like stackoverflow.com
+the extension add extra links to the page. For generic websites, it provides context menu for saving selection or full page.
+Development language is `coffeescript` and build system ig `grunt`.
+
+* **CLI**: command line interface for working with the system from the bash. Using `go` as main development language.
+
+* **Frontend**: AngularJS app for the system frontend using `coffeescript` and `gulp` as build system.
+
+* **Backend**: Server side code, in `java` with `gradle`, has multiple modules.
+
+* **Deployment**: Scripts for deploying the system. Currently, we are going to deploy it to AWS micro tier (with 1GB ram
+and SSD hard disk). Using `docker` for faster deployment.
+
+* **DevOps**: Docker files and scripts for setting up development environment.
+
+
+== How to setup development environment
+
+1. Build the docker images: Go to `devops/docker` and run: `bld-devops.sh -b` to build base images. (Try `bld-devops.sh -h` for help)
+2. Run `jenkins` instance: Go to `devops/docker` and run: `dkr-devops.sh -j`. (Try `dkr-devops.sh -h` for help)

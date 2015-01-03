@@ -1,0 +1,16 @@
+scm-api
+git
+git-client
+sonar
+gradle
+delivery-pipeline-plugin
+email-ext
+job-dsl
+nodejs
+parameterized-trigger
+build-pipeline-plugin
+nested-view
+awseb-deployment-plugin
+ws-cleanup
+envinject
+golang

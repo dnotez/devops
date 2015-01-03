@@ -1,0 +1,2 @@
+Base image for Jenkins slave nodes
+see https://github.com/rrader/docker-jenkins-slave

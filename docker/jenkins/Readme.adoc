@@ -1,0 +1,4 @@
+
+This jenkins docker file seems more advanced and preferred over normal jenkins as install required plugins during build time.
+
+See https://github.com/ciandt-dev/docker-jenkins-gulp
