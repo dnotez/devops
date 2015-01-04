@@ -7,8 +7,8 @@ Suggested project chaings:
 This project will checkout the code from git repository
 [source,bash]
 ----
-git@bitbucket.org:masgari/pushlists.git
-#configure bitbucket development keys
+git@github.com:dnotez/backend.git
+#configure development keys
 ----
 
 and run gradle script to build the java code. If all tests passed,
@@ -111,9 +111,10 @@ see https://wiki.jenkins-ci.org/display/JENKINS/AWSEB+Deployment+Plugin
 
 [source,bash]
 ----
+BUILD_NUMBER=snapshot
 echo ${BUILD_NUMBER}
 BASE=`pwd`
-BUILD_DIR="${BASE}/../build/${BUILD_NUMBER}"
+BUILD_DIR="${BASE}/build/${BUILD_NUMBER}"
 mkdir -p ${BUILD_DIR}
 rm -fr ${BUILD_DIR}/*
 
@@ -128,7 +129,7 @@ gulp build
 mkdir -p ${BUILD_DIR}/web-server/app
 mv dist/* ${BUILD_DIR}/web-server/app/
 
-cd ${BASE}/extension/pList
+cd ${BASE}/chrome-extension
 npm install
 bower install
 grunt build
@@ -138,15 +139,22 @@ cp package/pList-${EXT_VER}.zip ${BUILD_DIR}/web-server/app/assets/
 # rollback it for test purposes
 #git checkout -- app/manifest.json
 
-cd ${BASE}/cli
-#cli is already built during test
-cp bin/pl ${BUILD_DIR}/web-server/app/assets/
+cd ${BASE}/dnotez-cli
+export GOPATH=`pwd`
+
+go get -v ./...
+#why go get failing once?
+go get -v ./...
+
+go build  github.com/dnotez/dnotez-cli
+
+cp bin/dnotez-cli ${BUILD_DIR}/web-server/app/assets/
 
 printf "Build Number:${BUILD_NUMBER}\nDate:`date`\n" > ${BUILD_DIR}/build.txt
 
 #now compress and upload the artifacts
 cd ${BUILD_DIR}
-tar cjf ../pl-${BUILD_NUMBER}.tar.bz2 *
+tar cjf ../dnotez-${BUILD_NUMBER}.tar.bz2 *
 
 #todo: find a jenkins plugin to upload the bz2 file to s3 bucket
 

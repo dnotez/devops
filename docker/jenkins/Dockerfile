@@ -2,7 +2,8 @@ FROM devops-jdk8
 
 RUN apt-get update
 
-RUN apt-get install -y wget git curl zip bzip2 libfreetype6 libfontconfig make python python-dev python-pip ruby-full \
+RUN apt-get install -y wget git curl zip bzip2 libfreetype6 libfontconfig make \
+  python python-dev python-pip ruby-full mercurial \
  && rm -rf /var/lib/apt/lists/*
 
 #building node
@@ -73,4 +74,4 @@ ENV LANG en_GB.UTF-8
 ENV LANGUAGE en_GB:en
 ENV LC_ALL en_GB.UTF-8
 
-USER jenkins 
+USER jenkins

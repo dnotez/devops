@@ -14,3 +14,5 @@ awseb-deployment-plugin
 ws-cleanup
 envinject
 golang
+multiple-scms
+s3

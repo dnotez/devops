@@ -9,5 +9,5 @@ Project layout
 5. Deployment: Contains docker configurations and scripts to build and deploy the system.
 6. DevOps: Docker files and scripts for building development environment (Jenkins, builder images, etc.)
 
-All these projects will be placed in code folder, currently all of them under one bitbucket project.
+Each project is placed under different git repo, see https://github.com/dnotez
 
